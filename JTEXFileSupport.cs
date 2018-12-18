@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace JTEXFileFormat
 {
-    class JTEXFileSupport
+    public class JTEXFileSupport
     {
-        int fileDataOffset;
+        public int fileDataOffset;
         int encodingIdentifier; // 0X04=RGBA4444 | 0x03=RGB888 | 0X02=RGBA8888
         int imageWidth; //Without Stride
         int imageHeight; //Without Stride

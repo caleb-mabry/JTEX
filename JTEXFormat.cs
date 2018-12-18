@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 namespace JTEXFileFormat
 {
-    class Program
+    class JTEXFormat
     {
         static void Main(string[] args)
         {
+
         }
     }
 }

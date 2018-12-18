@@ -16,9 +16,8 @@ namespace JTEXFileFormat
         }
         public void getImageData()
         {
-            try
+            using (BinaryReader sr = new BinaryReader(File.Open("Character.jtex", FileMode.Open)))
             {
-                BinaryReader sr = new BinaryReader("C:\Users\Evan\Desktop"); //Change this to change the location of your file
                 int fileDataOffset = sr.ReadInt32();
                 int encodingIdentifier = sr.ReadInt32();
                 int imageWidth = sr.ReadInt32();
@@ -26,24 +25,21 @@ namespace JTEXFileFormat
                 int strideWidth = sr.ReadInt32();
                 int strideHeight = sr.ReadInt32();
                 sr.BaseStream.Position = fileDataOffset;
-
-                if (encodingIdentifier == 0x04) // 0X04=RGBA4444
+                using (BinaryWriter br = new BinaryWriter(File.Open("Character.jtex", FileMode.Create)))
                 {
+                    if (encodingIdentifier == 0x04) // 0X04=RGBA4444
+                    {
 
+                    }
+                    if (encodingIdentifier == 0x03) // 0x03=RGB888
+                    {
+                    }
+                    if (encodingIdentifier == 0x02) // 0X02=RGBA8888
+                    {
+                    }
                 }
-                if (encodingIdentifier == 0x03) // 0x03=RGB888
-                {
+                
 
-                }
-                if (encodingIdentifier == 0x02) // 0X02=RGBA8888
-                {
-
-                }
-
-            }
-            catch (Exception)
-            {
-                Console.WriteLine("Exception: Maybe another time");
             }
         }
 

@@ -15,115 +15,74 @@ namespace JTEXFileFormat
     {
         public int x;
         public int y;
-
-        public static int gen(int n)
+        public static List<Point> ZOrder = new List<Point>
         {
-
-            // S(0) = 0 
-            if (n == 0)
-                return 0;
-
-            // S(1) = 1 
-            else if (n == 1)
-                return 1;
-
-            // S(2 * n) = 4 * S(n) 
-            else if (n % 2 == 0)
-                return 4 * gen(n / 2);
-
-            // S(2 * n + 1) = 4 * S(n) + 1 
-            else if (n % 2 == 1)
-                return 4 * gen(n / 2) + 1;
-            return 0;
+            new Point(0,0),
+            new Point(1,0),
+            new Point(0,1),
+            new Point(1,1),
+            new Point(2,0),
+            new Point(3,0),
+            new Point(2,1),
+            new Point(3,1),
+            new Point(0,2),
+            new Point(1,2),
+            new Point(0,3),
+            new Point(1,3),
+            new Point(2,2),
+            new Point(3,2),
+            new Point(2,3),
+            new Point(3,3),
+            new Point(4,0),
+            new Point(5,0),
+            new Point(4,1),
+            new Point(5,1),
+            new Point(6,0),
+            new Point(7,0),
+            new Point(6,1),
+            new Point(7,1),
+            new Point(4,2),
+            new Point(5,2),
+            new Point(4,3),
+            new Point(5,3),
+            new Point(6,2),
+            new Point(7,2),
+            new Point(6,3),
+            new Point(7,3),
+            new Point(0,4),
+            new Point(1,4),
+            new Point(0,5),
+            new Point(1,5),
+            new Point(2,4),
+            new Point(3,4),
+            new Point(2,5),
+            new Point(3,5),
+            new Point(0,6),
+            new Point(1,6),
+            new Point(0,7),
+            new Point(1,7),
+            new Point(2,6),
+            new Point(3,6),
+            new Point(2,7),
+            new Point(3,7),
+            new Point(4,4),
+            new Point(5,4),
+            new Point(4,5),
+            new Point(5,5),
+            new Point(6,4),
+            new Point(7,4),
+            new Point(6,5),
+            new Point(7,5),
+            new Point(4,6),
+            new Point(5,6),
+            new Point(4,7),
+            new Point(5,7),
+            new Point(6,6),
+            new Point(7,6),
+            new Point(6,7),
+            new Point(7,7);
         }
-
-        // Generating the first 'n' terms  
-        // of Moser-de Bruijn Sequence 
-        public static void moserDeBruijn(int n)
-        {
-            for (int i = 0; i < n; i++)
-                Console.Write(gen(i) + " ");
-            Console.WriteLine();
-        }
-
-        // Driver Code 
-        public static void Main()
-        {
-            int n = 8;
-            Console.WriteLine("First " + n +
-                            " terms of " +
-            "Moser-de Bruijn Sequence : ");
-            moserDeBruijn(n);
-        }
-        public static void test()
-        {
-            IDictionary<int, string> dict = new Dictionary<int, string>();
-            dict.Add(1, "One");
-            dict.Add(2, "Two");
-            dict.Add(3, "Three");
-            dict.Add(4, "One");
-            dict.Add(5, "Two");
-            dict.Add(6, "Three");
-            dict.Add(7, "Three");
-            dict.Add(8, "Three");
-            dict.Add(9, "Three");
-            dict.Add(10, "Three");
-            dict.Add(11, "Three");
-            dict.Add(12, "Three");
-            dict.Add(13, "Three");
-            dict.Add(14, "Three");
-            dict.Add(15, "Three");
-            dict.Add(16, "Three");
-            dict.Add(17, "Three");
-            dict.Add(18, "Three");
-            dict.Add(19, "Three");
-            dict.Add(20, "Three");
-            dict.Add(21, "One");
-            dict.Add(22, "Two");
-            dict.Add(23, "Three");
-            dict.Add(24, "One");
-            dict.Add(25, "Two");
-            dict.Add(26, "Three");
-            dict.Add(27, "Three");
-            dict.Add(28, "Three");
-            dict.Add(29, "Three");
-            dict.Add(30, "Three");
-            dict.Add(31, "Three");
-            dict.Add(32, "Three");
-            dict.Add(33, "Three");
-            dict.Add(34, "Three");
-            dict.Add(35, "Three");
-            dict.Add(36, "Three");
-            dict.Add(37, "Three");
-            dict.Add(38, "Three");
-            dict.Add(39, "Three");
-            dict.Add(40, "Three");
-            dict.Add(41, "One");
-            dict.Add(42, "Two");
-            dict.Add(43, "Three");
-            dict.Add(44, "One");
-            dict.Add(45, "Two");
-            dict.Add(46, "Three");
-            dict.Add(47, "Three");
-            dict.Add(48, "Three");
-            dict.Add(49, "Three");
-            dict.Add(50, "Three");
-            dict.Add(51, "Three");
-            dict.Add(52, "Three");
-            dict.Add(53, "Three");
-            dict.Add(54, "Three");
-            dict.Add(55, "Three");
-            dict.Add(56, "Three");
-            dict.Add(57, "Three");
-            dict.Add(58, "Three");
-            dict.Add(59, "Three");
-            dict.Add(61, "Three");
-            dict.Add(62, "Three");
-            dict.Add(63, "Three");
-            dict.Add(64, "Three");
-            dict.Add(65, "Three");
-
-        }
+   
     }
 
     //public static void Main(string[] args)

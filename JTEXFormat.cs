@@ -81,9 +81,43 @@ namespace JTEXFileFormat
             new Point(7,6),
             new Point(6,7),
             new Point(7,7);
-        }
-   
     }
+    public static Color ReadPixel(this BinaryReader br, int encodingIdentifier)
+    {
+        if (encodingIdentifier == 0X03)
+        {
+            int R = br.ReadByte();
+            int G = br.ReadByte();
+            int B = br.ReadByte();
+            Color newColor = Color.FromArgb(R, G, B);
+            return newColor;
+        }
+    }
+        
+    public static void Main(string[] args)
+    {
+        using (BinaryReader br = new BinaryReader(File.Open("TalkU_BG15.jtex", FileMode.Open)))
+        {
+            int fileDataOffset = br.ReadInt32();
+            int encodingIdentifier = br.ReadInt32();
+            int imageWidth = br.ReadInt32();
+            int imageHeight = br.ReadInt32();
+            int strideWidth = br.ReadInt32();
+            int strideHeight = br.ReadInt32();
+            br.BaseStream.Position = fileDataOffset;
+            Bitmap newImage = new Bitmap(imageWidth, imageHeight);
+            var pixel = 0;
+            var widthTiles = imageWidth / 8;
+            Color color;
+            while ((color = br.ReadPixel(br, encodingIdentifier,)) != null)
+            {
+                var point = ZOrder[pixel % 64];
+                newImage.SetPixel(point.X + (pixel / 64 % widthTiles) * 8, point.Y + (pixel / 64 / widthTiles) * 8, color);
+                pixel++;
+            }
+        }
+    }
+}
 
     //public static void Main(string[] args)
     //    {

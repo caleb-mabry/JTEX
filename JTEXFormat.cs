@@ -13,8 +13,6 @@ namespace JTEXFileFormat
 {
     static class JTEXFormat
     {
-        public int x;
-        public int y;
         public static List<Point> ZOrder = new List<Point>
         {
             new Point(0,0),
@@ -82,10 +80,11 @@ namespace JTEXFileFormat
             new Point(6,7),
             new Point(7,7)
         };
+
         public static Color ReadPixel(this BinaryReader br, int encodingIdentifier)
         {
-            Color newColor = Color.FromArgb(0, 0, 0);
-            if (encodingIdentifier == 0X03)
+            Color newColor;
+            if (encodingIdentifier == 0X03 && br.BaseStream.Position < br.BaseStream.Length)
             {
                 int R = br.ReadByte();
                 int G = br.ReadByte();
@@ -93,7 +92,10 @@ namespace JTEXFileFormat
                 newColor = Color.FromArgb(R, G, B);
                 return newColor;
             }
-            return newColor;
+            else
+            {
+                return newColor = Color.Empty;
+            }
         }
 
 
@@ -109,16 +111,19 @@ namespace JTEXFileFormat
                 int strideWidth = br.ReadInt32();
                 int strideHeight = br.ReadInt32();
                 br.BaseStream.Position = fileDataOffset;
-                Bitmap newImage = new Bitmap(imageWidth, imageHeight);
+                Bitmap newImage = new Bitmap(strideWidth, strideHeight);
                 var pixel = 0;
-                var widthTiles = imageWidth / 8;
+                var widthTiles = strideWidth / 8;
                 Color color;
-                while ((color = br.ReadPixel(br, encodingIdentifier,)) != null)
+                // while ((color = br.ReadPixel(encodingIdentifier)) != null)
+                while (br.ReadPixel(encodingIdentifier) != Color.Empty)
                 {
+                    color = br.ReadPixel(encodingIdentifier);
                     var point = ZOrder[pixel % 64];
                     newImage.SetPixel(point.X + (pixel / 64 % widthTiles) * 8, point.Y + (pixel / 64 / widthTiles) * 8, color);
                     pixel++;
                 }
+                newImage.Save("Fixed.bitmap");
             }
         }
     }

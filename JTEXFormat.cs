@@ -5,8 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Drawing;
-
-
+// TODO: The files are still not being converted properly
 
 
 namespace JTEXFileFormat

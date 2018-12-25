@@ -84,7 +84,27 @@ namespace JTEXFileFormat
         public static Color ReadPixel(this BinaryReader br, int encodingIdentifier)
         {
             Color newColor;
-            if (encodingIdentifier == 0X03 && br.BaseStream.Position < br.BaseStream.Length)
+            if (encodingIdentifier == 0X04 && br.BaseStream.Position < br.BaseStream.Length) //Character RGBA4444
+            {
+                int AandRUnsplit = br.ReadByte();
+                int A = AandRUnsplit % 16;
+                int R = AandRUnsplit / 16;
+                int GandBUnsplit = br.ReadByte();
+                int G = GandBUnsplit % 16;
+                int B = GandBUnsplit / 16;
+
+                newColor = Color.FromArgb(A, R, G, B);
+                return newColor;
+            }
+            if (encodingIdentifier == 0X03 && br.BaseStream.Position < br.BaseStream.Length) //TalkU_Bg15 RGB888
+            {
+                int R = br.ReadByte();
+                int G = br.ReadByte();
+                int B = br.ReadByte();
+                newColor = Color.FromArgb(R, G, B);
+                return newColor;
+            }
+            if (encodingIdentifier == 0X03 && br.BaseStream.Position < br.BaseStream.Length) // 
             {
                 int R = br.ReadByte();
                 int G = br.ReadByte();
@@ -102,7 +122,7 @@ namespace JTEXFileFormat
 
         public static void Main(string[] args)
         {
-            using (BinaryReader br = new BinaryReader(File.Open("TalkU_BG15.jtex", FileMode.Open)))
+            using (BinaryReader br = new BinaryReader(File.Open("Character.jtex", FileMode.Open)))
             {
                 int fileDataOffset = br.ReadInt32();
                 int encodingIdentifier = br.ReadInt32();
@@ -115,7 +135,6 @@ namespace JTEXFileFormat
                 var pixel = 0;
                 var widthTiles = strideWidth / 8;
                 Color color;
-                // while ((color = br.ReadPixel(encodingIdentifier)) != null)
                 while (br.ReadPixel(encodingIdentifier) != Color.Empty)
                 {
                     color = br.ReadPixel(encodingIdentifier);

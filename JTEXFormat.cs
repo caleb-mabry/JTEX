@@ -14,11 +14,11 @@ namespace JTEXFileFormat
     {
         public static List<Point> ZOrder = new List<Point>
         {
-            new Point(0,0),
-            new Point(1,0),
-            new Point(0,1),
-            new Point(1,1),
-            new Point(2,0),
+            new Point(0,0), 
+            new Point(1,0), 
+            new Point(0,1), 
+            new Point(1,1), 
+            new Point(2,0), 
             new Point(3,0),
             new Point(2,1),
             new Point(3,1),
@@ -83,27 +83,26 @@ namespace JTEXFileFormat
         public static Color ReadPixel(this BinaryReader br, int encodingIdentifier)
         {
             Color newColor;
-            if (encodingIdentifier == 0X04 && br.BaseStream.Position < br.BaseStream.Length) //Character RGBA4444
+            if (encodingIdentifier == 0X04) //Character RGBA4444
             {
-                int AandRUnsplit = br.ReadByte();
-                int A = AandRUnsplit % 16;
-                int R = AandRUnsplit / 16;
-                int GandBUnsplit = br.ReadByte();
-                int G = GandBUnsplit % 16;
-                int B = GandBUnsplit / 16;
-
+                var GandBUnsplit = br.ReadByte();
+                var AandRUnsplit = br.ReadByte();
+                int A = AandRUnsplit / 2;   
+                int R = AandRUnsplit % 8;
+                int G = GandBUnsplit / 2;
+                int B = GandBUnsplit % 8;
                 newColor = Color.FromArgb(A, R, G, B);
                 return newColor;
             }
-            if (encodingIdentifier == 0X03 && br.BaseStream.Position < br.BaseStream.Length) //TalkU_Bg15 RGB888
+            if (encodingIdentifier == 0X03) //TalkU_Bg15 RGB888
             {
-                int R = br.ReadByte();
-                int G = br.ReadByte();
                 int B = br.ReadByte();
+                int G = br.ReadByte();
+                int R = br.ReadByte();
                 newColor = Color.FromArgb(R, G, B);
                 return newColor;
             }
-            if (encodingIdentifier == 0X03 && br.BaseStream.Position < br.BaseStream.Length) // 
+            if (encodingIdentifier == 0X02 && br.BaseStream.Position < br.BaseStream.Length) // RGB8888
             {
                 int R = br.ReadByte();
                 int G = br.ReadByte();
@@ -116,8 +115,6 @@ namespace JTEXFileFormat
                 return newColor = Color.Empty;
             }
         }
-
-
 
         public static void Main(string[] args)
         {
@@ -134,11 +131,15 @@ namespace JTEXFileFormat
                 var pixel = 0;
                 var widthTiles = strideWidth / 8;
                 Color color;
-                while (br.ReadPixel(encodingIdentifier) != Color.Empty)
+                while (br.BaseStream.Position < br.BaseStream.Length)
+                    //(br.ReadPixel(encodingIdentifier) != Color.Empty)
                 {
+
                     color = br.ReadPixel(encodingIdentifier);
-                    var point = ZOrder[pixel % 64];
-                    newImage.SetPixel(point.X + (pixel / 64 % widthTiles) * 8, point.Y + (pixel / 64 / widthTiles) * 8, color);
+                    var point = ZOrder[pixel % 64]; //Cycles 0-63
+                    int x = (point.X + (pixel / 64 % widthTiles) * 8);
+                    int y = (point.Y + (pixel / 64 / widthTiles) * 8);
+                    newImage.SetPixel(x, y, color);
                     pixel++;
                 }
                 newImage.Save("Fixed.bitmap");

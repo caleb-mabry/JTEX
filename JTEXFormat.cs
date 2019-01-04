@@ -82,31 +82,32 @@ namespace JTEXFileFormat
         public static Color ReadPixel(this BinaryReader br, int encodingIdentifier)
         {
             Color newColor;
-            if (encodingIdentifier == 0X04) //Character RGBA4444
+            if (encodingIdentifier == 0X04) //RGBA4444
             {
                 int firstByte = br.ReadByte();
                 int secondByte = br.ReadByte();
-                int R = firstByte >> 4; 
-                int G = firstByte & 0x0F;
-                int B = secondByte >> 4;
-                int A = secondByte & 0x0F;
+                int B = firstByte >> 4; 
+                int A = firstByte & 0x0F;
+                int R = secondByte >> 4;
+                int G = secondByte & 0x0F;
+                newColor = Color.FromArgb(ConvertTo255(A), ConvertTo255(R), ConvertTo255(G), ConvertTo255(B));
+                return newColor;
+            }
+            if (encodingIdentifier == 0X03) //RGB888
+            {
+                int B = br.ReadByte();
+                int G = br.ReadByte();
+                int R = br.ReadByte();
+                newColor = Color.FromArgb(R, G, B);
+                return newColor;
+            }
+            if (encodingIdentifier == 0X02) //RGB8888
+            {
+                int A = br.ReadByte();
+                int R = br.ReadByte();
+                int G = br.ReadByte();
+                int B = br.ReadByte();
                 newColor = Color.FromArgb(A, R, G, B);
-                return newColor;
-            }
-            if (encodingIdentifier == 0X03) //TalkU_Bg15 RGB888
-            {
-                int B = br.ReadByte();
-                int G = br.ReadByte();
-                int R = br.ReadByte();
-                newColor = Color.FromArgb(R, G, B);
-                return newColor;
-            }
-            if (encodingIdentifier == 0X02 && br.BaseStream.Position < br.BaseStream.Length) // RGB8888
-            {
-                int R = br.ReadByte();
-                int G = br.ReadByte();
-                int B = br.ReadByte();
-                newColor = Color.FromArgb(R, G, B);
                 return newColor;
             }
             else
@@ -114,9 +115,23 @@ namespace JTEXFileFormat
                 return newColor = Color.Empty;
             }
         }
+        public static int ConvertTo255(int value)
+        {
+            var fromMaxRange = (1 << 4) - 1;
+            var toMaxRange = (1 << 8) - 1;
+
+            var div = 1;
+            while (toMaxRange % fromMaxRange != 0)
+            {
+                div <<= 1;
+                toMaxRange = ((toMaxRange + 1) << 1) - 1;
+            }
+
+            return value * (toMaxRange / fromMaxRange) / div;
+        }
         public static void Main(string[] args)
         {
-            using (BinaryReader br = new BinaryReader(File.Open("Character.jtex", FileMode.Open)))
+            using (BinaryReader br = new BinaryReader(File.Open("HowToMenuL_Switch_aen.jtex", FileMode.Open)))
             {
                 int fileDataOffset = br.ReadInt32();
                 int encodingIdentifier = br.ReadInt32();
@@ -143,68 +158,4 @@ namespace JTEXFileFormat
             }
         }
     }
-
-    //public static void Main(string[] args)
-    //    {
-    //        using (BinaryReader sr = new BinaryReader(File.Open("TalkU_Bg15.jtex", FileMode.Open)))
-    //        {
-    //            int fileDataOffset = sr.ReadInt32();
-    //            int encodingIdentifier = sr.ReadInt32();
-    //            int imageWidth = sr.ReadInt32();
-    //            int imageHeight = sr.ReadInt32();
-    //            int strideWidth = sr.ReadInt32();
-    //            int strideHeight = sr.ReadInt32();
-    //            sr.BaseStream.Position = fileDataOffset;
-    //            Bitmap newImage = new Bitmap(imageWidth, imageHeight);
-    //            newImage.SetPropertyItem.strideHeight() = strideHeight
-    //            using (BinaryWriter bw = new BinaryWriter(File.Open("JTEXFileData.txt", FileMode.Create)))
-    //            {
-    //                //if (encodingIdentifier == 0x04) // 0X04=RGBA4444
-    //                //{
-    //                //    for (x = 0; x < newImage.Width; x++)
-    //                //    {
-    //                //        for (y = 0; y < newImage.Height; y++)
-    //                //        {
-    //                //            Color pixelColor = newImage.GetPixel(x, y);
-    //                //            Color newColor = Color.FromArgb(sr.ReadBytes(4), sr.ReadBytes(4), sr.ReadBytes(8), sr.ReadBytes(8));
-    //                //            newImage.SetPixel(x, y, newColor);
-    //                //        }
-    //                //    }
-    //                //}
-
-    //                if (encodingIdentifier == 0x03) // 0x03=RGB888
-    //                {
-    //                    for (int y = 0; y < newImage.Height; y++)
-    //                    {
-    //                        for (int x = 0; x < newImage.Width; x++)
-    //                        {
-    //                            int R = sr.ReadByte();
-    //                            int G = sr.ReadByte();
-    //                            int B = sr.ReadByte();
-    //                            Color newColor = Color.FromArgb(R, G, B);
-    //                            newImage.SetPixel(x, y, newColor);
-    //                        }
-    //                    }
-
-    //                    newImage.Save("NewImage.bitmap");
-    //                }
-    //                //if (encodingIdentifier == 0x02) // 0X02=RGBA8888
-    //                //{
-    //                //    for (x = 0; x < newImage.Width; x++)
-    //                //    {
-    //                //        for (y = 0; y < newImage.Height; y++)
-    //                //        {
-    //                //            Color pixelColor = newImage.GetPixel(x, y);
-    //                //            Color newColor = Color.FromArgb(pixelColor.R, 0, 0);
-    //                //            newImage.SetPixel(x, y, newColor);
-    //                //        }
-    //                //    }
-    //                //}
-    //            }
-
-
-    //        }
-    //    }
-
-    //}
 }

@@ -5,8 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Drawing;
-// TODO: The files are still not being converted properly
-
+using System.Diagnostics.Contracts;
 
 namespace JTEXFileFormat
 {
@@ -85,12 +84,12 @@ namespace JTEXFileFormat
             Color newColor;
             if (encodingIdentifier == 0X04) //Character RGBA4444
             {
-                var GandBUnsplit = br.ReadByte();
-                var AandRUnsplit = br.ReadByte();
-                int A = AandRUnsplit / 2;   
-                int R = AandRUnsplit % 8;
-                int G = GandBUnsplit / 2;
-                int B = GandBUnsplit % 8;
+                int firstByte = br.ReadByte();
+                int secondByte = br.ReadByte();
+                int R = firstByte >> 4; 
+                int G = firstByte & 0x0F;
+                int B = secondByte >> 4;
+                int A = secondByte & 0x0F;
                 newColor = Color.FromArgb(A, R, G, B);
                 return newColor;
             }
@@ -115,7 +114,6 @@ namespace JTEXFileFormat
                 return newColor = Color.Empty;
             }
         }
-
         public static void Main(string[] args)
         {
             using (BinaryReader br = new BinaryReader(File.Open("Character.jtex", FileMode.Open)))
@@ -134,7 +132,6 @@ namespace JTEXFileFormat
                 while (br.BaseStream.Position < br.BaseStream.Length)
                     //(br.ReadPixel(encodingIdentifier) != Color.Empty)
                 {
-
                     color = br.ReadPixel(encodingIdentifier);
                     var point = ZOrder[pixel % 64]; //Cycles 0-63
                     int x = (point.X + (pixel / 64 % widthTiles) * 8);

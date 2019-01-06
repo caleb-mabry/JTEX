@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Drawing;
 using System.Diagnostics.Contracts;
+using System.Windows.Forms;
 
 namespace JTEXFileFormat
 {
-    static class JTEXFormat
+    static class JTEXtoJPG
     {
         public static List<Point> ZOrder = new List<Point>
         {
@@ -129,10 +130,45 @@ namespace JTEXFileFormat
 
             return value * (toMaxRange / fromMaxRange) / div;
         }
+        [STAThreadAttribute]
+        public static string FileDialogBox()
+        {
+            var fileContent = string.Empty;
+            var filePath = string.Empty;
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.InitialDirectory = "c:\\";
+                openFileDialog.Filter = "jtex files (*.jtex)|*.jtex|jtex (*.*)|*.*";
+                openFileDialog.FilterIndex = 2;
+                openFileDialog.RestoreDirectory = true;
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    //Get the path of specified file
+                    filePath = openFileDialog.FileName;
+
+                    //Read the contents of the file into a stream
+                    var fileStream = openFileDialog.OpenFile();
+
+                    using (StreamReader reader = new StreamReader(fileStream))
+                    {
+                        fileContent = reader.ReadToEnd();
+                    }
+                }
+                return filePath;
+            }
+        }
+        [STAThreadAttribute]
         public static void Main(string[] args)
         {
-            using (BinaryReader br = new BinaryReader(File.Open("HowToMenuL_Switch_aen.jtex", FileMode.Open)))
+            string FileName = FileDialogBox();
+            if (string.IsNullOrEmpty(FileName))
             {
+                return;
+            }
+            using (BinaryReader br = new BinaryReader(File.Open(FileName, FileMode.Open)))
+            {
+                
                 int fileDataOffset = br.ReadInt32();
                 int encodingIdentifier = br.ReadInt32();
                 int imageWidth = br.ReadInt32();
@@ -145,7 +181,6 @@ namespace JTEXFileFormat
                 var widthTiles = strideWidth / 8;
                 Color color;
                 while (br.BaseStream.Position < br.BaseStream.Length)
-                    //(br.ReadPixel(encodingIdentifier) != Color.Empty)
                 {
                     color = br.ReadPixel(encodingIdentifier);
                     var point = ZOrder[pixel % 64]; //Cycles 0-63
@@ -154,7 +189,7 @@ namespace JTEXFileFormat
                     newImage.SetPixel(x, y, color);
                     pixel++;
                 }
-                newImage.Save("Fixed.bitmap");
+                newImage.Save(FileName + ".jpg");
             }
         }
     }
